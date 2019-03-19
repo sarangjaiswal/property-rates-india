@@ -53,6 +53,7 @@ for url in set_url_magic_bricks:
 # merging 2 sets and removing unique and converting the set to list and then sorting it
 list_all_url = list(set_sub_url_magic_bricks.union(set_url_magic_bricks))
 list_all_url.sort()
+print(list_all_url)
 
 city_name = []
 locality_name = []
@@ -63,15 +64,15 @@ avg_price = []
 # loop all the city pages and get the rental price for each locality within city
 for url in list_all_url:
     city_name_str = url.split('/')[4].split('-')[-1]
+    print("=============================================================================================")
+    print(url)
+    print(city_name_str)
     # get the response
     response = requests.get(url, headers=headers)
     # get the html content from the response
     soup = BeautifulSoup(response.content, "html.parser")
     locality_name_table = soup.find('div', class_='priceTable1 priceTable1-newWidth ', id='localityTable')
-    price_table = soup.find('div', class_='priceTable2 priceTable2-newWidth', id='saleTable')
-
     locality_table_body = locality_name_table('tbody', id='localitySec')
-    price_table_body = price_table('tbody')
 
     for row in locality_table_body[0].find_all('tr'):
         if row.findAll('td'):
@@ -80,7 +81,10 @@ for url in list_all_url:
         else:
             pass  # ignore
 
-    for row in price_table_body[0].find_all('tr')[2:]:
+    price_table = soup.find('div', class_='priceTable2 priceTable2-newWidth', id='saleTable')
+    # price_table_body = price_table('tbody')
+
+    for row in price_table.find_all('tr')[2:]:
         if row.findAll('td'):
             price_range.append(row.findAll('td')[0].text.replace(',', '').strip())
             avg_price.append(row.findAll('td')[1].text.replace(',', '').strip())
